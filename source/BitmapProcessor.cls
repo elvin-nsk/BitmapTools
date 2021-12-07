@@ -21,10 +21,6 @@ Private Type typeThis
   Doc As Document
   WidthPx As Long
   HeightPx As Long
-  CleanWidthInches As Long
-  CleanHeightInches As Long
-  CleanWidth As Double
-  CleanHeight As Double
   WidthMultiplier As Double
   HeightMultiplier As Double
 End Type
@@ -105,30 +101,17 @@ Private Sub CalculateSizes()
   With This
     .WidthPx = .Bitmap.SizeWidth
     .HeightPx = .Bitmap.SizeHeight
-    .CleanWidthInches = .Bitmap.SizeWidth / .Bitmap.ResolutionX
-    .CleanHeightInches = .Bitmap.SizeHeight / .Bitmap.ResolutionY
-    .CleanWidth = InchesToCurrentUnits(.CleanWidthInches)
-    .CleanHeight = InchesToCurrentUnits(.CleanHeightInches)
     .WidthMultiplier = 1
     .HeightMultiplier = 1
   End With
 End Sub
 
 Private Sub ResetShape(ByVal Shape As Shape)
-  Dim W#, Ratio#
-  W = Shape.SizeWidth
   With Shape
     ClearEffects Shape
     .ClearTransformations
     .Bitmap.ResetCropEnvelope
     CalculateSizes
-    If Not .Bitmap.ResolutionX = .Bitmap.ResolutionY Then
-      Ratio = .Bitmap.ResolutionX / .Bitmap.ResolutionY
-      '.SetSize w
-      .SetSize .SizeWidth * Ratio, .SizeHeight
-      'This.WidthMultiplier = .SizeWidth / This.CleanWidth
-      'This.HeightMultiplier = .SizeHeight / This.CleanHeight
-    End If
   End With
 End Sub
 
@@ -142,10 +125,16 @@ Private Function ReplaceBitmapWith(ByVal NewBitmapShape As Shape)
     Set Env = .Bitmap.CropEnvelope.GetCopy
     .Bitmap.ResetCropEnvelope
     
-    CopyShapeSizeAndPosition .Shape, NewBitmapShape, _
-                             NewBitmapShape.Bitmap.SizeWidth / .WidthPx, _
-                             NewBitmapShape.Bitmap.SizeHeight / .HeightPx
-    NewBitmapShape.Bitmap.CropEnvelope.CopyAssign Env
+    Dim OrigSizeMultX As Double
+    Dim OrigSizeMultY As Double
+    OrigSizeMultX = GetRoundedMultiplier _
+      (NewBitmapShape.SizeWidth, .Shape.OriginalWidth, NewBitmapShape.Bitmap.ResolutionX)
+    OrigSizeMultY = GetRoundedMultiplier _
+      (NewBitmapShape.SizeHeight, .Shape.OriginalHeight, NewBitmapShape.Bitmap.ResolutionY)
+    
+    CopyShapeSizeAndPosition .Shape, NewBitmapShape
+    If OrigSizeMultX = 1 And OrigSizeMultY = 1 Then _
+      NewBitmapShape.Bitmap.CropEnvelope.CopyAssign Env
     CopyShapeEffects .Shape, NewBitmapShape
     CopyShapeName .Shape, NewBitmapShape
     NewBitmapShape.OrderBackOf .Shape
@@ -197,6 +186,9 @@ Private Sub CopyShapeSizeAndPosition(ByVal Source As Shape, _
                    d21 / MultiplierY, _
                    d22 / MultiplierY, _
                    tx, ty
+                   
+  Target.CenterX = Source.CenterX
+  Target.CenterY = Source.CenterY
     
   Target.OrderBackOf Source
 
@@ -280,6 +272,17 @@ Private Sub ClearEffects(ByVal Shape As Shape)
   Next
   On Error GoTo 0
 End Sub
+
+Private Function GetRoundedMultiplier(ByVal Size1 As Double, _
+                                      ByVal Size2 As Double, _
+                                      ByVal Resolution As Long _
+                                      ) As Double
+  If VBA.Abs(Size1 - Size2) > InchesToCurrentUnits(1 / Resolution) Then
+    GetRoundedMultiplier = Size1 / Size2
+  Else
+    GetRoundedMultiplier = 1
+  End If
+End Function
 
 Private Function InchesToCurrentUnits(ByVal Size As Double) As Double
   InchesToCurrentUnits = ConvertUnits(Size, cdrInch, This.Doc.Unit)
