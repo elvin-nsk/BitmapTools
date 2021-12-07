@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 ' Макрос           : BitmapTools
-' Версия           : 2021.12.06
+' Версия           : 2021.12.07
 ' Сайты            : https://vk.com/elvin_macro/BitmapTools
 '                    https://github.com/elvin-nsk/BitmapTools
 ' Автор            : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)

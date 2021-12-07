@@ -1,7 +1,7 @@
 Attribute VB_Name = "lib_elvin"
 '===============================================================================
 ' Модуль           : lib_elvin
-' Версия           : 2021.11.15
+' Версия           : 2021.12.07
 ' Автор            : elvin-nsk (me@elvin.nsk.ru)
 ' Использован код  : dizzy (из макроса CtC), Alex Vakulenko
 '                    и др.
@@ -657,13 +657,14 @@ End Function
 
 'находит временную папку
 Public Function GetTempFolder() As String
-  GetTempFolder = Environ$("TEMP")
-  If GetTempFolder = "" Then
-    GetTempFolder = Environ$("TMP")
-    If GetTempFolder = "" Then
-      If Dir("c:\", vbDirectory) <> "" Then GetTempFolder = "c:\"
-    End If
-  End If
+  GetTempFolder = AddProperEndingToPath(VBA.Environ$("TEMP"))
+  If FileExists(GetTempFolder) Then Exit Function
+  GetTempFolder = AddProperEndingToPath(VBA.Environ$("TMP"))
+  If FileExists(GetTempFolder) Then Exit Function
+  GetTempFolder = "c:\temp\"
+  If FileExists(GetTempFolder) Then Exit Function
+  GetTempFolder = "c:\windows\temp\"
+  If FileExists(GetTempFolder) Then Exit Function
 End Function
 
 'полное имя временного файла
@@ -741,6 +742,11 @@ End Function
 Public Function FileExists(ByVal File As String) As Boolean
   If File = "" Then Exit Function
   FileExists = VBA.Len(VBA.Dir(File)) > 0
+End Function
+
+Public Function AddProperEndingToPath(ByVal Path As String) As String
+  If Not VBA.Right$(Path, 1) = "\" Then AddProperEndingToPath = Path & "\" _
+  Else AddProperEndingToPath = Path
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -1016,5 +1022,4 @@ Private Sub ThrowIfNotCollectionOrArray(ByRef CollectionOrArray As Variant)
   VBA.Err.Raise 13, Source:="lib_elvin", _
                 Description:="Type mismatch: CollectionOrArray должен быть Collection или Array"
 End Sub
-
 
