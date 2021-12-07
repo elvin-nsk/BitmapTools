@@ -142,7 +142,9 @@ Private Function ReplaceBitmapWith(ByVal NewBitmapShape As Shape)
     Set Env = .Bitmap.CropEnvelope.GetCopy
     .Bitmap.ResetCropEnvelope
     
-    CopyShapeSizeAndPosition .Shape, NewBitmapShape
+    CopyShapeSizeAndPosition .Shape, NewBitmapShape, _
+                             NewBitmapShape.Bitmap.SizeWidth / .WidthPx, _
+                             NewBitmapShape.Bitmap.SizeHeight / .HeightPx
     NewBitmapShape.Bitmap.CropEnvelope.CopyAssign Env
     CopyShapeEffects .Shape, NewBitmapShape
     CopyShapeName .Shape, NewBitmapShape
@@ -179,7 +181,10 @@ Private Function Save(ByVal FileName As String, ByVal Filter As cdrFilter)
   
 End Function
 
-Private Sub CopyShapeSizeAndPosition(ByVal Source As Shape, ByVal Target As Shape)
+Private Sub CopyShapeSizeAndPosition(ByVal Source As Shape, _
+                                     ByVal Target As Shape, _
+                                     Optional ByVal MultiplierX As Double = 1, _
+                                     Optional ByVal MultiplierY As Double = 1)
 
   Dim d11 As Double, d12 As Double, d21 As Double, d22 As Double
   Dim X As Double, Y As Double, W As Double, H As Double
@@ -187,11 +192,12 @@ Private Sub CopyShapeSizeAndPosition(ByVal Source As Shape, ByVal Target As Shap
   
   'позиция и геометрические искажения
   Source.GetMatrix d11, d12, d21, d22, tx, ty
-  Target.SetMatrix d11 / This.WidthMultiplier, d12 / This.WidthMultiplier, d21 / This.HeightMultiplier, d22 / This.HeightMultiplier, tx, ty
-  'небольшой хак, чтобы размер был совсем точным (без учёта Multiplier пока что, надо дорабатывать эту концепцию)
-  Target.SizeWidth = Source.SizeWidth
-  Target.SizeHeight = Source.SizeHeight
-  
+  Target.SetMatrix d11 / MultiplierX, _
+                   d12 / MultiplierX, _
+                   d21 / MultiplierY, _
+                   d22 / MultiplierY, _
+                   tx, ty
+    
   Target.OrderBackOf Source
 
 End Sub
