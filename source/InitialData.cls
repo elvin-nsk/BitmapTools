@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "BitmapContext"
+Attribute VB_Name = "InitialData"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -13,12 +13,13 @@ Option Explicit
 '===============================================================================
 
 Public Document As Document
+Public Layer As ILayer
 Public BitmapShape As Shape
 
 '===============================================================================
 
 Public Function CreateOrNotify() As IEither
-  With New BitmapContext
+  With New InitialData
     Set .Document = ActiveDocument
     If .Document Is Nothing Then
       Set CreateOrNotify = Either.Create
@@ -29,12 +30,13 @@ Public Function CreateOrNotify() As IEither
       Set CreateOrNotify = Either.Create
       Exit Function
     End If
+    Set .Layer = LayerAdapter.Create(ActiveLayer)
     Set CreateOrNotify = Either.Create(.Self)
   End With
 End Function
 
 '===============================================================================
 
-Public Property Get Self() As BitmapContext
+Public Property Get Self() As InitialData
   Set Self = Me
 End Property

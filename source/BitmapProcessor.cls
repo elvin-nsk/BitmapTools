@@ -42,6 +42,7 @@ Friend Function Init(ByVal BitmapShape As Shape) As BitmapProcessor
     Set .Bitmap = .Shape.Bitmap
     Set .Layer = .Shape.Layer
     Set .Doc = .Shape.Page.Parent.Parent
+    ResetLayer .Layer
   End With
   CalculateSizes
   Set Init = Me
@@ -141,32 +142,31 @@ Private Function ReplaceBitmapWith(ByVal NewBitmapShape As Shape)
     
     .Shape.Delete
     Init NewBitmapShape
-  
+    
   End With
   
 End Function
 
 Private Function Save(ByVal FileName As String, ByVal Filter As cdrFilter)
-    
-  Dim BmpCopy As Shape
   
-  If This.Shape.Type = cdrBitmapShape Then
-    Set BmpCopy = This.Shape.Duplicate
-    ResetShape BmpCopy
-    If This.Shape.Bitmap.Transparent Then
-      BmpCopy.CreateSelection
-      With BmpCopy.Bitmap
-        This.Doc.ExportBitmap(FileName, Filter, cdrSelection, _
-                              .Mode, .SizeWidth, .SizeHeight, _
-                              .ResolutionX, .ResolutionY, _
-                              cdrNoAntiAliasing, False, True, True, False _
-                              ).Finish
-      End With
-    Else
-      BmpCopy.Bitmap.SaveAs(FileName, Filter).Finish
-    End If
-    BmpCopy.Delete
+  If Not This.Shape.Type = cdrBitmapShape Then Exit Function
+  
+  Dim BmpCopy As Shape
+  Set BmpCopy = This.Shape.Duplicate
+  ResetShape BmpCopy
+  If This.Shape.Bitmap.Transparent Then
+    BmpCopy.CreateSelection
+    With BmpCopy.Bitmap
+      This.Doc.ExportBitmap(FileName, Filter, cdrSelection, _
+                            .Mode, .SizeWidth, .SizeHeight, _
+                            .ResolutionX, .ResolutionY, _
+                            cdrNoAntiAliasing, False, True, True, False _
+                            ).Finish
+    End With
+  Else
+    BmpCopy.Bitmap.SaveAs(FileName, Filter).Finish
   End If
+  BmpCopy.Delete
   
 End Function
 
@@ -271,6 +271,14 @@ Private Sub ClearEffects(ByVal Shape As Shape)
     Shape.Effects(i).Clear
   Next
   On Error GoTo 0
+End Sub
+
+Private Sub ResetLayer(ByVal Layer As Layer)
+  With Layer
+    If Not .Visible Then .Visible = True
+    If Not .Printable Then .Printable = True
+    If Not .Editable Then .Editable = True
+  End With
 End Sub
 
 Private Function GetRoundedMultiplier(ByVal Size1 As Double, _

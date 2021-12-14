@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 ' Макрос           : BitmapTools
-' Версия           : 2021.12.07
+' Версия           : 2021.12.14
 ' Сайты            : https://vk.com/elvin_macro/BitmapTools
 '                    https://github.com/elvin-nsk/BitmapTools
 ' Автор            : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)
@@ -17,8 +17,8 @@ Sub SendToEditor()
 
   If RELEASE Then On Error GoTo Catch
   
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
@@ -40,7 +40,9 @@ Sub SendToEditor()
   lib_elvin.BoostStart "Редактирование изображения во внешнем редакторе", _
                        BitmapTools.RELEASE
   
+  Context.Layer.SaveAndResetStates
   Helpers.SendToEditor Context.BitmapShape, BitmapFile
+  Context.Layer.RestoreStates
       
 Finally:
   lib_elvin.BoostFinish
@@ -56,15 +58,15 @@ Sub UpdateAfterEdit()
 
   If RELEASE Then On Error GoTo Catch
   
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
       Set Context = .SuccessValue
     End If
   End With
-  
+    
   Dim BitmapFile As String
   With Helpers.GetCurrentTempBitmapFileSpec(Context.Document.FileName, _
                                             Context.BitmapShape.StaticID)
@@ -79,7 +81,9 @@ Sub UpdateAfterEdit()
   lib_elvin.BoostStart "Обновление изображения", _
                        BitmapTools.RELEASE
   
+  Context.Layer.SaveAndResetStates
   Helpers.UpdateAfterEdit Context.BitmapShape, BitmapFile
+  Context.Layer.RestoreStates
       
 Finally:
   lib_elvin.BoostFinish
@@ -95,8 +99,8 @@ Sub SendToEditorAndUpdate()
 
   If RELEASE Then On Error GoTo Catch
 
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
@@ -118,6 +122,7 @@ Sub SendToEditorAndUpdate()
   lib_elvin.BoostStart "Редактирование изображения во внешнем редакторе", _
                         BitmapTools.RELEASE
                         
+  Context.Layer.SaveAndResetStates
   Helpers.SendToEditor Context.BitmapShape, BitmapFile
   
   With New UpdateDialogView
@@ -137,6 +142,8 @@ Sub SendToEditorAndUpdate()
   End If
   Helpers.UpdateAfterEdit Context.BitmapShape, BitmapFile
   
+  Context.Layer.RestoreStates
+  
 Finally:
   lib_elvin.BoostFinish
   Exit Sub
@@ -151,8 +158,8 @@ Sub RemoveCroppingPath()
 
   If RELEASE Then On Error GoTo Catch
   
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
@@ -161,7 +168,9 @@ Sub RemoveCroppingPath()
   End With
   
   lib_elvin.BoostStart "Освободить из кропа", False
+  Context.Layer.SaveAndResetStates
   Context.BitmapShape.Bitmap.ResetCropEnvelope
+  Context.Layer.RestoreStates
   
 Finally:
   lib_elvin.BoostFinish
@@ -177,8 +186,8 @@ Sub RemoveTransparency()
 
   If RELEASE Then On Error GoTo Catch
   
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
@@ -189,10 +198,12 @@ Sub RemoveTransparency()
   If Not Context.BitmapShape.Bitmap.Transparent Then Exit Sub
   
   lib_elvin.BoostStart "Убрать прозрачность", RELEASE
+  Context.Layer.SaveAndResetStates
   With BitmapProcessor.Create(Context.BitmapShape)
     .Flatten
     .Shape.CreateSelection
   End With
+  Context.Layer.RestoreStates
   
 Finally:
   lib_elvin.BoostFinish
@@ -208,8 +219,8 @@ Sub CheckTransparency()
   
   If ActiveDocument Is Nothing Then Exit Sub
 
-  Dim Context As BitmapContext
-  With BitmapContext.CreateOrNotify
+  Dim Context As InitialData
+  With InitialData.CreateOrNotify
     If .IsError Then
       Exit Sub
     Else
