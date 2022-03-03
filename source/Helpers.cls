@@ -76,11 +76,11 @@ End Function
 
 Public Function ValidateShapeOrNotify(ByVal Shape As Shape) As Boolean
   If Shape Is Nothing Then
-    VBA.MsgBox "Выделите растровый объект", vbInformation
+    VBA.MsgBox LocalizedStrings("Common_ErrNothingSelected"), vbInformation
     Exit Function
   End If
   If Not Shape.Type = cdrBitmapShape Then
-    VBA.MsgBox "Выделенный объект не является растром", vbInformation
+    VBA.MsgBox LocalizedStrings("Common_ErrShapeIsNotBitmap"), vbInformation
     Exit Function
   End If
   ValidateShapeOrNotify = True

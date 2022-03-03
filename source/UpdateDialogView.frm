@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UpdateDialogView 
-   Caption         =   "Редактирование изображения"
    ClientHeight    =   3285
    ClientLeft      =   45
    ClientTop       =   390
@@ -36,19 +35,22 @@ Public IsCancelAndDelete As Boolean
 '===============================================================================
 
 Private Sub UserForm_Initialize()
-  '
+  Me.Caption = LocalizedStrings("UDView_Caption")
+  btnUpdate.Caption = LocalizedStrings("UDView_BtnUpdateStateReady")
+  btnCancel.Caption = LocalizedStrings("UDView_BtnCancel")
+  btnDelete.Caption = LocalizedStrings("UDView_BtnDelete")
 End Sub
 
 Private Sub UserForm_Activate()
-  txtUpdate = "Обновите изображение из временного файла, когда закончите редактирование"
-  txtCancel = "Не обновлять, оставить файл " & FileSpec & " во временной папке"
-  txtDelete = "Не обновлять, удалить временный файл"
+  txtUpdate = LocalizedStrings("UDView_Update")
+  txtCancel = LocalizedStrings("UDView_Cancel", FileSpec)
+  txtDelete = LocalizedStrings("UDView_Delete")
   With btnUpdate
     .Enabled = False
-    .Caption = "Ожидание"
+    .Caption = LocalizedStrings("UDView_BtnUpdateStateWait")
     DoEvents
     Sleep 2000
-    .Caption = "Обновить"
+    .Caption = LocalizedStrings("UDView_BtnUpdateStateReady")
     .Enabled = True
     .SetFocus
   End With
@@ -102,7 +104,9 @@ Private Sub GuardNum(ByVal KeyAscii As MSForms.ReturnInteger)
   End Select
 End Sub
 
-Private Sub GuardRangeDbl(TextBox As MSForms.TextBox, ByVal Min As Double, Optional ByVal Max As Double = 2147483647)
+Private Sub GuardRangeDbl(TextBox As MSForms.TextBox, _
+                          ByVal Min As Double, _
+                          Optional ByVal Max As Double = 1.79769313486231E+308)
   With TextBox
     If .Value = "" Then .Value = VBA.CStr(Min)
     If VBA.CDbl(.Value) > Max Then .Value = VBA.CStr(Max)
@@ -110,7 +114,9 @@ Private Sub GuardRangeDbl(TextBox As MSForms.TextBox, ByVal Min As Double, Optio
   End With
 End Sub
 
-Private Sub GuardRangeLng(TextBox As MSForms.TextBox, ByVal Min As Long, Optional ByVal Max As Long = 2147483647)
+Private Sub GuardRangeLng(TextBox As MSForms.TextBox, _
+                          ByVal Min As Long, _
+                          Optional ByVal Max As Long = 2147483647)
   With TextBox
     If .Value = "" Then .Value = VBA.CStr(Min)
     If VBA.CLng(.Value) > Max Then .Value = VBA.CStr(Max)

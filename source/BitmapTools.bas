@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 ' Макрос           : BitmapTools
-' Версия           : 2021.12.14
+' Версия           : 2022.03.03
 ' Сайты            : https://vk.com/elvin_macro/BitmapTools
 '                    https://github.com/elvin-nsk/BitmapTools
 ' Автор            : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)
@@ -13,14 +13,20 @@ Public Const RELEASE As Boolean = True
 
 '===============================================================================
 
+Public LocalizedStrings As IStringLocalizer
+
+'===============================================================================
+
 Sub SendToEditor()
 
   If RELEASE Then On Error GoTo Catch
   
+  LocalizedStringsInit
+  
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
@@ -30,14 +36,14 @@ Sub SendToEditor()
   With Helpers.GetNewTempBitmapFileSpec(Context.Document.FileName, _
                                         Context.BitmapShape.StaticID)
     If .IsError Then
-      VBA.MsgBox "Не удалось создать временный файл", vbCritical
-      Exit Sub
+      VBA.MsgBox LocalizedStrings("BTools_ErrTempFileCreate"), vbCritical
+      GoTo Finally
     Else
       BitmapFile = .SuccessValue
     End If
   End With
   
-  lib_elvin.BoostStart "Редактирование изображения во внешнем редакторе", _
+  lib_elvin.BoostStart LocalizedStrings("BTools_SendToEditorUndo"), _
                        BitmapTools.RELEASE
   
   Context.Layer.SaveAndResetStates
@@ -46,10 +52,11 @@ Sub SendToEditor()
       
 Finally:
   lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
   Exit Sub
 
 Catch:
-  VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+  VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
   Resume Finally
   
 End Sub
@@ -58,10 +65,12 @@ Sub UpdateAfterEdit()
 
   If RELEASE Then On Error GoTo Catch
   
+  LocalizedStringsInit
+  
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
@@ -71,14 +80,14 @@ Sub UpdateAfterEdit()
   With Helpers.GetCurrentTempBitmapFileSpec(Context.Document.FileName, _
                                             Context.BitmapShape.StaticID)
     If .IsError Then
-      VBA.MsgBox "Не удалось найти временный файл", vbCritical
-      Exit Sub
+      VBA.MsgBox LocalizedStrings("BTools_ErrTempFileFind"), vbCritical
+      GoTo Finally
     Else
       BitmapFile = .SuccessValue
     End If
   End With
   
-  lib_elvin.BoostStart "Обновление изображения", _
+  lib_elvin.BoostStart LocalizedStrings("BTools_UpdateAfterEditUndo"), _
                        BitmapTools.RELEASE
   
   Context.Layer.SaveAndResetStates
@@ -87,10 +96,11 @@ Sub UpdateAfterEdit()
       
 Finally:
   lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
   Exit Sub
 
 Catch:
-  VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+  VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
   Resume Finally
   
 End Sub
@@ -98,11 +108,13 @@ End Sub
 Sub SendToEditorAndUpdate()
 
   If RELEASE Then On Error GoTo Catch
+  
+  LocalizedStringsInit
 
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
@@ -113,14 +125,14 @@ Sub SendToEditorAndUpdate()
                                         Context.BitmapShape.StaticID)
     If .IsError Then
       VBA.MsgBox "Не удалось создать временный файл", vbCritical
-      Exit Sub
+      GoTo Finally
     Else
       BitmapFile = .SuccessValue
     End If
   End With
 
-  lib_elvin.BoostStart "Редактирование изображения во внешнем редакторе", _
-                        BitmapTools.RELEASE
+  lib_elvin.BoostStart LocalizedStrings("BTools_SendToEditorUndo"), _
+                       BitmapTools.RELEASE
                         
   Context.Layer.SaveAndResetStates
   Helpers.SendToEditor Context.BitmapShape, BitmapFile
@@ -137,7 +149,7 @@ Sub SendToEditorAndUpdate()
   End With
   
   If Not lib_elvin.FileExists(BitmapFile) Then
-    VBA.MsgBox "Временный файл не найден", vbCritical
+    VBA.MsgBox LocalizedStrings("BTools_ErrTempFileFind"), vbCritical
     GoTo Finally
   End If
   Helpers.UpdateAfterEdit Context.BitmapShape, BitmapFile
@@ -146,10 +158,11 @@ Sub SendToEditorAndUpdate()
   
 Finally:
   lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
   Exit Sub
 
 Catch:
-  VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+  VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
   Resume Finally
 
 End Sub
@@ -158,26 +171,30 @@ Sub RemoveCroppingPath()
 
   If RELEASE Then On Error GoTo Catch
   
+  LocalizedStringsInit
+  
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
   End With
   
-  lib_elvin.BoostStart "Освободить из кропа", False
+  lib_elvin.BoostStart _
+    LocalizedStrings("BTools_RemoveCroppingPathUndo"), False
   Context.Layer.SaveAndResetStates
   Context.BitmapShape.Bitmap.ResetCropEnvelope
   Context.Layer.RestoreStates
   
 Finally:
   lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
   Exit Sub
 
 Catch:
-  VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+  VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
   Resume Finally
 
 End Sub
@@ -186,10 +203,12 @@ Sub RemoveTransparency()
 
   If RELEASE Then On Error GoTo Catch
   
+  LocalizedStringsInit
+  
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
@@ -197,7 +216,7 @@ Sub RemoveTransparency()
   
   If Not Context.BitmapShape.Bitmap.Transparent Then Exit Sub
   
-  lib_elvin.BoostStart "Убрать прозрачность", RELEASE
+  lib_elvin.BoostStart LocalizedStrings("BTools_RemoveTransparencyUndo"), RELEASE
   Context.Layer.SaveAndResetStates
   With BitmapProcessor.Create(Context.BitmapShape)
     .Flatten
@@ -207,22 +226,25 @@ Sub RemoveTransparency()
   
 Finally:
   lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
   Exit Sub
 
 Catch:
-  VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+  VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
   Resume Finally
 
 End Sub
 
 Sub CheckTransparency()
+
+  LocalizedStringsInit
   
   If ActiveDocument Is Nothing Then Exit Sub
 
   Dim Context As InitialData
   With InitialData.CreateOrNotify
     If .IsError Then
-      Exit Sub
+      GoTo Finally
     Else
       Set Context = .SuccessValue
     End If
@@ -233,4 +255,18 @@ Sub CheckTransparency()
     .Show
   End With
   
+Finally:
+  lib_elvin.BoostFinish
+  Set LocalizedStrings = Nothing
+  Exit Sub
+  
+End Sub
+
+'===============================================================================
+
+Private Sub LocalizedStringsInit()
+  With StringLocalizer.Builder(cdrEnglishUS, LocalizedStringsEN.Strings)
+    .WithLocale cdrRussian, LocalizedStringsRU.Strings
+    Set LocalizedStrings = .Build
+  End With
 End Sub

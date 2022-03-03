@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} TransparencyView 
-   Caption         =   "Проверка прозрачности"
    ClientHeight    =   2535
    ClientLeft      =   45
    ClientTop       =   390
@@ -25,16 +24,17 @@ Public IsCancelled As Boolean
 '===============================================================================
 
 Private Sub UserForm_Initialize()
-  '
+  Me.Caption = LocalizedStrings("TransView_Caption")
+  btnOk.Caption = LocalizedStrings("TransView_BtnOK")
 End Sub
 
 Private Sub UserForm_Activate()
   If Transparent Then
     imgNonTransparent.Visible = False
-    Text = "Изображение с прозрачностью"
+    Text = LocalizedStrings("TransView_Transparent")
   Else
     imgTransparent.Visible = False
-    Text = "Изображение без прозрачности"
+    Text = LocalizedStrings("TransView_Opaque")
   End If
 End Sub
 
