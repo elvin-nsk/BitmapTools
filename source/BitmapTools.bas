@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 ' Макрос           : BitmapTools
-' Версия           : 2022.03.03
+' Версия           : 2022.03.04
 ' Сайты            : https://vk.com/elvin_macro/BitmapTools
 '                    https://github.com/elvin-nsk/BitmapTools
 ' Автор            : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)
@@ -265,8 +265,8 @@ End Sub
 '===============================================================================
 
 Private Sub LocalizedStringsInit()
-  With StringLocalizer.Builder(cdrEnglishUS, LocalizedStringsEN.Strings)
-    .WithLocale cdrRussian, LocalizedStringsRU.Strings
+  With StringLocalizer.Builder(cdrEnglishUS, New LocalizedStringsEN)
+    .WithLocale cdrRussian, New LocalizedStringsRU
     Set LocalizedStrings = .Build
   End With
 End Sub

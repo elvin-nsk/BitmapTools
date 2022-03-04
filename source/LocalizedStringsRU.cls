@@ -5,16 +5,17 @@ END
 Attribute VB_Name = "LocalizedStringsRU"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = True
+Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '===============================================================================
 ' cdrRussian (1049)
 '===============================================================================
 
-'@PredeclaredId
 Option Explicit
 
-Public Strings As Scripting.IDictionary
+Implements ILocalizedStrings
+
+Private Strings As Scripting.IDictionary
 
 Private Sub Class_Initialize()
   Set Strings = New Scripting.Dictionary
@@ -48,3 +49,9 @@ Private Sub Class_Initialize()
 
   End With
 End Sub
+
+'===============================================================================
+
+Private Property Get ILocalizedStrings_Strings() As Scripting.IDictionary
+  Set ILocalizedStrings_Strings = Strings
+End Property

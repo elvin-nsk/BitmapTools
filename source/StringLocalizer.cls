@@ -28,20 +28,16 @@ Private This As typeThis
 
 Public Function Builder( _
                   ByVal FallbackLCID As Variant, _
-                  ByVal FallbackStrings As Scripting.IDictionary _
+                  ByVal FallbackStrings As ILocalizedStrings _
                 ) As IStringLocalizerBuilder
   With New StringLocalizer
     Set Builder = .Init(VBA.CStr(FallbackLCID), FallbackStrings)
   End With
 End Function
 
-Private Sub Class_Terminate()
-  Dispose
-End Sub
-
 Friend Function Init( _
                   ByVal FallbackLCID As Variant, _
-                  ByVal FallbackStrings As Scripting.IDictionary _
+                  ByVal FallbackStrings As ILocalizedStrings _
                 ) As IStringLocalizerBuilder
   With This
     .FallbackLCID = FallbackLCID
@@ -60,7 +56,7 @@ End Function
 
 Private Function IStringLocalizerBuilder_WithLocale( _
                    ByVal LCID As Variant, _
-                   ByVal Strings As Scripting.IDictionary _
+                   ByVal Strings As ILocalizedStrings _
                  ) As IStringLocalizerBuilder
   This.StringPacks.Add VBA.CStr(LCID), Strings
 End Function
@@ -85,15 +81,25 @@ Private Property Get IStringLocalizer_Item( _
                        ByVal Key As String, _
                        ParamArray Args() As Variant _
                      ) As String
+  IStringLocalizer_Item = GetString(Key)
   Dim ArgumentsToPass As Variant
-  If LBound(Args) = 0 And UBound(Args) = -1 Then
-    IStringLocalizer_Item = This.StringPacks(This.CurrentLCID)(Key)
-  Else
+  If Not (LBound(Args) = 0 And UBound(Args) = -1) Then
     ArgumentsToPass = Args
     IStringLocalizer_Item = _
-      StringFormat(This.StringPacks(This.CurrentLCID)(Key), ArgumentsToPass)
+      StringFormat(IStringLocalizer_Item, ArgumentsToPass)
   End If
 End Property
+
+Private Function GetString(ByVal Key As String) As String
+  With This
+    If .StringPacks(.CurrentLCID).Strings.Exists(Key) Then
+      GetString = This.StringPacks(.CurrentLCID).Strings(Key)
+    Else
+      GetString = This.StringPacks(.FallbackLCID).Strings(Key)
+    End If
+  End With
+End Function
+
 
 Private Property Get IStringLocalizer_Self() As IStringLocalizer
   Set IStringLocalizer_Self = Me
@@ -166,13 +172,6 @@ Private Sub AssignUnknown(ByRef Destination As Variant, ByRef Value As Variant)
   Else
     Destination = Value
   End If
-End Sub
-
-Private Sub Dispose()
-  Dim StringPack As Variant
-  For Each StringPack In This.StringPacks.Items
-    Set StringPack = Nothing
-  Next StringPack
 End Sub
 
 Private Sub ThrowNoStringsForLCID(ByVal LCID As String)
