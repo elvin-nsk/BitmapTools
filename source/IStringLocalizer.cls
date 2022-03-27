@@ -17,8 +17,8 @@ End Sub
 
 '@DefaultMember
 Public Property Get Item(ByVal Key As String, _
-                         ParamArray Args() As Variant _
-                         ) As String
+                                                 ParamArray Args() As Variant _
+                                                 ) As String
 Attribute Item.VB_UserMemId = 0
 End Property
 

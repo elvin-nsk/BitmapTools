@@ -24,47 +24,47 @@ Public IsCancelled As Boolean
 '===============================================================================
 
 Private Sub UserForm_Initialize()
-  Me.Caption = LocalizedStrings("TransView_Caption")
-  btnOk.Caption = LocalizedStrings("TransView_BtnOK")
+    Me.Caption = LocalizedStrings("TransView_Caption")
+    btnOk.Caption = LocalizedStrings("TransView_BtnOK")
 End Sub
 
 Private Sub UserForm_Activate()
-  If Transparent Then
-    imgNonTransparent.Visible = False
-    Text = LocalizedStrings("TransView_Transparent")
-  Else
-    imgTransparent.Visible = False
-    Text = LocalizedStrings("TransView_Opaque")
-  End If
+    If Transparent Then
+        imgNonTransparent.Visible = False
+        Text = LocalizedStrings("TransView_Transparent")
+    Else
+        imgTransparent.Visible = False
+        Text = LocalizedStrings("TransView_Opaque")
+    End If
 End Sub
 
 
 Private Sub btnCancel_Click()
-  FormCancel
+    FormCancel
 End Sub
 
 Private Sub btnOK_Click()
-  FormŒ 
+    FormŒ 
 End Sub
 
 '===============================================================================
 
 Private Sub FormŒ ()
-  Me.Hide
-  IsOk = True
+    Me.Hide
+    IsOk = True
 End Sub
 
 Private Sub FormCancel()
-  Me.Hide
-  IsCancelled = True
+    Me.Hide
+    IsCancelled = True
 End Sub
 
 '===============================================================================
 
 Private Sub UserForm_QueryClose(—ancel As Integer, CloseMode As Integer)
-  If CloseMode = VbQueryClose.vbFormControlMenu Then
-    —ancel = True
-    FormCancel
-  End If
+    If CloseMode = VbQueryClose.vbFormControlMenu Then
+        —ancel = True
+        FormCancel
+    End If
 End Sub
 

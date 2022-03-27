@@ -13,8 +13,8 @@ Option Explicit
 '===============================================================================
 
 Public Function WithLocale(ByVal LCID As Variant, _
-                           ByVal Strings As ILocalizedStrings _
-                           ) As IStringLocalizerBuilder
+                                                     ByVal Strings As ILocalizedStrings _
+                                                     ) As IStringLocalizerBuilder
 End Function
 
 '===============================================================================

@@ -15,22 +15,25 @@ Option Explicit
 Public Property Get Exists() As Boolean
 End Property
 
-Public Function IsNameContains(ByVal NamePart As String, _
-                               Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Boolean
+Public Function IsNameContains( _
+                    ByVal NamePart As String, _
+                    Optional ByVal Compare As VbCompareMethod = vbBinaryCompare _
+                ) As Boolean
 End Function
 
-Public Function Match(Optional ByVal Name As String = "", _
-                      Optional ByVal Visible As VbTriState = vbUseDefault, _
-                      Optional ByVal Printable As VbTriState = vbUseDefault, _
-                      Optional ByVal Editable As VbTriState = vbUseDefault, _
-                      Optional ByVal Master As VbTriState = vbUseDefault, _
-                      Optional ByVal Special As VbTriState = vbUseDefault, _
-                      Optional ByVal Desktop As VbTriState = vbUseDefault, _
-                      Optional ByVal Guides As VbTriState = vbUseDefault, _
-                      Optional ByVal Grid As VbTriState = vbUseDefault, _
-                      Optional ByVal Color As Color, _
-                      Optional ByVal OverrideColor As VbTriState = vbUseDefault _
-                      ) As Boolean
+Public Function Match( _
+                    Optional ByVal Name As String = "", _
+                    Optional ByVal Visible As VbTriState = vbUseDefault, _
+                    Optional ByVal Printable As VbTriState = vbUseDefault, _
+                    Optional ByVal Editable As VbTriState = vbUseDefault, _
+                    Optional ByVal Master As VbTriState = vbUseDefault, _
+                    Optional ByVal Special As VbTriState = vbUseDefault, _
+                    Optional ByVal Desktop As VbTriState = vbUseDefault, _
+                    Optional ByVal Guides As VbTriState = vbUseDefault, _
+                    Optional ByVal Grid As VbTriState = vbUseDefault, _
+                    Optional ByVal Color As Color, _
+                    Optional ByVal OverrideColor As VbTriState = vbUseDefault _
+                ) As Boolean
 End Function
 
 Public Sub MoveAbove(ByVal Layer As ILayer)

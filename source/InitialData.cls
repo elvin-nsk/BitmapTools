@@ -18,25 +18,25 @@ Public BitmapShape As Shape
 
 '===============================================================================
 
-Public Function CreateOrNotify() As IEither
-  With New InitialData
-    Set .Document = ActiveDocument
-    If .Document Is Nothing Then
-      Set CreateOrNotify = Either.Create
-      Exit Function
-    End If
-    Set .BitmapShape = ActiveShape
-    If Not Helpers.ValidateShapeOrNotify(.BitmapShape) Then
-      Set CreateOrNotify = Either.Create
-      Exit Function
-    End If
-    Set .Layer = LayerAdapter.Create(ActiveLayer)
-    Set CreateOrNotify = Either.Create(.Self)
-  End With
+Public Function CreateOrNotifyUser() As IEither
+    With New InitialData
+        Set .Document = ActiveDocument
+        If .Document Is Nothing Then
+            Set CreateOrNotifyUser = Either.Create
+            Exit Function
+        End If
+        Set .BitmapShape = ActiveShape
+        If Not Helpers.ValidateShapeOrNotifyUser(.BitmapShape) Then
+            Set CreateOrNotifyUser = Either.Create
+            Exit Function
+        End If
+        Set .Layer = LayerAdapter.Create(ActiveLayer)
+        Set CreateOrNotifyUser = Either.Create(.Self)
+    End With
 End Function
 
 '===============================================================================
 
 Public Property Get Self() As InitialData
-  Set Self = Me
+    Set Self = Me
 End Property
