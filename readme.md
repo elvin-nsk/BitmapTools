@@ -4,7 +4,7 @@
 
 - По имени файла известен как `elvin_BitmapTools.gms`.
 - Проверенно работает в версии **16**.
-- Языки: **Русский, English, Brazilian Portuguese**.
+- Языки: **русский, English, Brazilian Portuguese**.
 - Распространяется **бесплатно**, код **открытый**.
 - **Поддерживается автором**.
 
@@ -31,3 +31,6 @@
 
 Видеообзор:
 [![Video](https://img.youtube.com/vi/quC2g_wVpOE/maxresdefault.jpg)](https://www.youtube.com/watch?v=quC2g_wVpOE)
+
+## Ссылки
+[Обсуждение во вконтакте](https://vk.com/elvin_macro/BitmapTools)
