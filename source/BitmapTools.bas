@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 '   Макрос          : BitmapTools
-'   Версия          : 2022.03.27
+'   Версия          : 2023.08.27
 '   Сайты           : https://vk.com/elvin_macro/BitmapTools
 '                     https://github.com/elvin-nsk/BitmapTools
 '   Автор           : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)
@@ -9,7 +9,11 @@ Attribute VB_Name = "BitmapTools"
 
 Option Explicit
 
-Public Const RELEASE As Boolean = True
+Public Const RELEASE As Boolean = False
+
+Public Const CONFIG_NAME As String = "elvin_BitmapTools"
+Public Const EDITOR_KEY As String = "Editor"
+Public Const DEFAULT_PRESET As String = "Default"
 
 Public LocalizedStrings As IStringLocalizer
 
@@ -19,37 +23,37 @@ Sub SendToEditor()
     
     LocalizedStringsInit
     
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
+    Dim Layer As ILayer
+    Set Layer = LayerAdapter.Create(Context.Layer)
+    
+    Dim Cfg As PresetsConfig
+    Set Cfg = Helpers.GetConfig(True)
         
     Dim BitmapFile As String
     With Helpers.GetNewTempBitmapFileSpec( _
                      Context.Document.FileName, _
-                     Context.BitmapShape.StaticID _
+                     Context.Shape.StaticID _
                  )
         If .IsError Then
-            VBA.MsgBox LocalizedStrings("BTools_ErrTempFileCreate"), vbCritical
+            VBA.MsgBox LocalizedStrings("BTools.ErrTempFileCreate"), vbCritical
             GoTo Finally
         Else
             BitmapFile = .SuccessValue
         End If
     End With
     
-    lib_elvin.BoostStart LocalizedStrings("BTools_SendToEditorUndo"), _
-                         BitmapTools.RELEASE
+    BoostStart _
+        LocalizedStrings("BTools.SendToEditorUndo"), BitmapTools.RELEASE
     
-    Context.Layer.SaveAndResetStates
-    Helpers.SendToEditor Context.BitmapShape, BitmapFile
-    Context.Layer.RestoreStates
+    Layer.SaveAndResetStates
+    Helpers.SendToEditor Cfg(EDITOR_KEY), Context.Shape, BitmapFile
+    Layer.RestoreStates
             
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
 
@@ -65,37 +69,34 @@ Sub UpdateAfterEdit()
     
     LocalizedStringsInit
     
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
+    Dim Layer As ILayer
+    Set Layer = LayerAdapter.Create(Context.Layer)
         
     Dim BitmapFile As String
     With Helpers.GetCurrentTempBitmapFileSpec( _
                      Context.Document.FileName, _
-                     Context.BitmapShape.StaticID _
+                     Context.Shape.StaticID _
                  )
         If .IsError Then
-            VBA.MsgBox LocalizedStrings("BTools_ErrTempFileFind"), vbCritical
+            VBA.MsgBox LocalizedStrings("BTools.ErrTempFileFind"), vbCritical
             GoTo Finally
         Else
             BitmapFile = .SuccessValue
         End If
     End With
     
-    lib_elvin.BoostStart LocalizedStrings("BTools_UpdateAfterEditUndo"), _
-                         BitmapTools.RELEASE
+    BoostStart _
+        LocalizedStrings("BTools.UpdateAfterEditUndo"), BitmapTools.RELEASE
     
-    Context.Layer.SaveAndResetStates
-    Helpers.UpdateAfterEdit Context.BitmapShape, BitmapFile
-    Context.Layer.RestoreStates
+    Layer.SaveAndResetStates
+    Helpers.UpdateAfterEdit Context.Shape, BitmapFile
+    Layer.RestoreStates
             
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
 
@@ -111,19 +112,16 @@ Sub SendToEditorAndUpdate()
     
     LocalizedStringsInit
 
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
+    Dim Layer As ILayer
+    Set Layer = LayerAdapter.Create(Context.Layer)
         
     Dim BitmapFile As String
     With Helpers.GetNewTempBitmapFileSpec( _
                      Context.Document.FileName, _
-                     Context.BitmapShape.StaticID _
+                     Context.Shape.StaticID _
                  )
         If .IsError Then
             VBA.MsgBox "Не удалось создать временный файл", vbCritical
@@ -132,12 +130,15 @@ Sub SendToEditorAndUpdate()
             BitmapFile = .SuccessValue
         End If
     End With
+    
+    Dim Cfg As PresetsConfig
+    Set Cfg = Helpers.GetConfig(True)
 
-    lib_elvin.BoostStart LocalizedStrings("BTools_SendToEditorUndo"), _
-                         BitmapTools.RELEASE
+    BoostStart _
+        LocalizedStrings("BTools.SendToEditorUndo"), BitmapTools.RELEASE
                                                 
-    Context.Layer.SaveAndResetStates
-    Helpers.SendToEditor Context.BitmapShape, BitmapFile
+    Layer.SaveAndResetStates
+    Helpers.SendToEditor Cfg(EDITOR_KEY), Context.Shape, BitmapFile
     
     With New UpdateDialogView
         .FileSpec = BitmapFile
@@ -150,16 +151,16 @@ Sub SendToEditorAndUpdate()
         End If
     End With
     
-    If Not lib_elvin.FileExists(BitmapFile) Then
-        VBA.MsgBox LocalizedStrings("BTools_ErrTempFileFind"), vbCritical
+    If Not FileExists(BitmapFile) Then
+        VBA.MsgBox LocalizedStrings("BTools.ErrTempFileFind"), vbCritical
         GoTo Finally
     End If
-    Helpers.UpdateAfterEdit Context.BitmapShape, BitmapFile
+    Helpers.UpdateAfterEdit Context.Shape, BitmapFile
     
-    Context.Layer.RestoreStates
+    Layer.RestoreStates
     
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
 
@@ -175,23 +176,20 @@ Sub RemoveCroppingPath()
     
     LocalizedStringsInit
     
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
+    Dim Layer As ILayer
+    Set Layer = LayerAdapter.Create(Context.Layer)
     
-    lib_elvin.BoostStart _
-        LocalizedStrings("BTools_RemoveCroppingPathUndo"), False
-    Context.Layer.SaveAndResetStates
-    Context.BitmapShape.Bitmap.ResetCropEnvelope
-    Context.Layer.RestoreStates
+    BoostStart _
+        LocalizedStrings("BTools.RemoveCroppingPathUndo"), False
+    Layer.SaveAndResetStates
+    Context.Shape.Bitmap.ResetCropEnvelope
+    Layer.RestoreStates
     
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
 
@@ -207,27 +205,24 @@ Sub RemoveTransparency()
     
     LocalizedStringsInit
     
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
+    Dim Layer As ILayer
+    Set Layer = LayerAdapter.Create(Context.Layer)
     
-    If Not Context.BitmapShape.Bitmap.Transparent Then Exit Sub
+    If Not Context.Shape.Bitmap.Transparent Then Exit Sub
     
-    lib_elvin.BoostStart LocalizedStrings("BTools_RemoveTransparencyUndo"), RELEASE
-    Context.Layer.SaveAndResetStates
-    With BitmapProcessor.Create(Context.BitmapShape)
+    BoostStart LocalizedStrings("BTools.RemoveTransparencyUndo"), RELEASE
+    Layer.SaveAndResetStates
+    With BitmapProcessor.Create(Context.Shape)
         .Flatten
         .Shape.CreateSelection
     End With
-    Context.Layer.RestoreStates
+    Layer.RestoreStates
     
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
 
@@ -243,25 +238,28 @@ Sub CheckTransparency()
     
     If ActiveDocument Is Nothing Then Exit Sub
 
-    Dim Context As InitialData
-    With InitialData.CreateOrNotifyUser
-        If .IsError Then
-            GoTo Finally
-        Else
-            Set Context = .SuccessValue
-        End If
-    End With
+    Dim Context As InputData
+    Set Context = GetContext
+    If Context.IsError Then GoTo Finally
     
     With New TransparencyView
-        .Transparent = Context.BitmapShape.Bitmap.Transparent
+        .Transparent = Context.Shape.Bitmap.Transparent
         .Show
     End With
     
 Finally:
-    lib_elvin.BoostFinish
+    BoostFinish
     Set LocalizedStrings = Nothing
     Exit Sub
     
+End Sub
+
+Sub Settings()
+    LocalizedStringsInit
+    With New SettingsView
+        .Show
+    End With
+    Set LocalizedStrings = Nothing
 End Sub
 
 '===============================================================================
@@ -272,4 +270,43 @@ Private Sub LocalizedStringsInit()
         .WithLocale cdrBrazilianPortuguese, New LocalizedStringsBR
         Set LocalizedStrings = .Build
     End With
+End Sub
+
+Private Function GetContext() As InputData
+    Set GetContext = _
+        InputData.RequestShapes( _
+            ErrNoDocument:=LocalizedStrings("Common.ErrNoDocument"), _
+            ErrLayerDisabled:=LocalizedStrings("Common.ErrLayerDisabled"), _
+            ErrNoSelection:=LocalizedStrings("Common.ErrNoSelection") _
+        )
+End Function
+
+'===============================================================================
+
+Private Sub TestPresets()
+    Dim PresetsVew As New SettingsView
+    Dim Dic As New Dictionary
+    With Dic
+        .Add "one", "1st content"
+        .Add "two", "2nd content"
+        .Add "another one", "3d content"
+    End With
+    Dim PresetsManager As PresetsController
+    Set PresetsManager = _
+        PresetsController.Create(PresetsVew, Dic, "two")
+    'PresetsManager.SetProtectedKey "one"
+    PresetsVew.Show
+End Sub
+
+Private Sub TestPresetsConfig()
+    With PresetsConfig.Create(CONFIG_NAME, Helpers.CreateDefaultPreset)
+        Show .CurrentPreset("Editor")
+    End With
+End Sub
+
+Private Sub TestDic()
+    Dim Dic As New Dictionary
+    Dim a As Variant
+    a = Dic("x")
+    Show Dic.Count
 End Sub

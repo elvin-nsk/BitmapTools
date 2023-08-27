@@ -21,31 +21,42 @@ Private Sub Class_Initialize()
     Set Strings = New Scripting.Dictionary
     With Strings
         
-        .Add "Common_ErrNothingSelected", "Выделите растровый объект"
-        .Add "Common_ErrShapeIsNotBitmap", "Выделенный объект не является растром"
+        .Add "Common.ErrNothingSelected", "Выделите растровый объект"
+        .Add "Common.ErrShapeIsNotBitmap", "Выделенный объект не является растром"
+        .Add "Common.ErrNoDocument", "Нет активного документа"
+        .Add "Common.ErrLayerDisabled", "Текущий слой закрыт"
+        .Add "Common.ErrNoSelection", "Выделите объекты"
     
-        .Add "BTools_SendToEditorUndo", _
+        .Add "BTools.SendToEditorUndo", _
             "Редактирование изображения во внешнем редакторе"
-        .Add "BTools_UpdateAfterEditUndo", "Обновление изображения"
-        .Add "BTools_RemoveCroppingPathUndo", "Освободить из кропа"
-        .Add "BTools_RemoveTransparencyUndo", "Убрать прозрачность"
-        .Add "BTools_ErrTempFileCreate", "Не удалось создать временный файл"
-        .Add "BTools_ErrTempFileFind", "Не удалось найти временный файл"
+        .Add "BTools.UpdateAfterEditUndo", "Обновление изображения"
+        .Add "BTools.RemoveCroppingPathUndo", "Освободить из кропа"
+        .Add "BTools.RemoveTransparencyUndo", "Убрать прозрачность"
+        .Add "BTools.ErrTempFileCreate", "Не удалось создать временный файл"
+        .Add "BTools.ErrTempFileFind", "Не удалось найти временный файл"
     
-        .Add "TransView_Caption", "Проверка прозрачности"
-        .Add "TransView_Transparent", "Изображение с прозрачностью"
-        .Add "TransView_Opaque", "Изображение без прозрачности"
-        .Add "TransView_BtnOK", "ОК"
+        .Add "TransView.Caption", "Проверка прозрачности"
+        .Add "TransView.Transparent", "Изображение с прозрачностью"
+        .Add "TransView.Opaque", "Изображение без прозрачности"
+        .Add "TransView.BtnOK", "ОК"
         
-        .Add "UDView_Caption", "Редактирование изображения"
-        .Add "UDView_Update", _
+        .Add "UDView.Caption", "Редактирование изображения"
+        .Add "UDView.Update", _
             "Обновите изображение из временного файла, когда закончите редактирование"
-        .Add "UDView_Cancel", "Не обновлять, оставить файл {0} во временной папке"
-        .Add "UDView_Delete", "Не обновлять, удалить временный файл"
-        .Add "UDView_BtnUpdateStateWait", "Ожидание"
-        .Add "UDView_BtnUpdateStateReady", "Обновить"
-        .Add "UDView_BtnCancel", "Отмена"
-        .Add "UDView_BtnDelete", "Удалить"
+        .Add "UDView.Cancel", "Не обновлять, оставить файл {0} во временной папке"
+        .Add "UDView.Delete", "Не обновлять, удалить временный файл"
+        .Add "UDView.BtnUpdateStateWait", "Ожидание"
+        .Add "UDView.BtnUpdateStateReady", "Обновить"
+        .Add "UDView.BtnCancel", "Отмена"
+        .Add "UDView.BtnDelete", "Удалить"
+        
+        .Add "Settings.Caption", "Настройки"
+        .Add "Settings.PresetsFrame", "Предустановки"
+        .Add "Settings.WarningPresetNameAlreadyExists", "Пресет с таким названием уже существует"
+        .Add "Settings.WarningPresetNameIsEmpty", "Название пресета не может быть пустым"
+        .Add "Settings.WarningPresetRemove", "Удалить пресет?"
+        .Add "Settings.txtEditor", "Выберите исполняемый файл редактора изображений"
+        .Add "Settings.btnOk", "Закрыть"
 
     End With
 End Sub

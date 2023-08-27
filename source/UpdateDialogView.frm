@@ -35,22 +35,22 @@ Public IsCancelAndDelete As Boolean
 '===============================================================================
 
 Private Sub UserForm_Initialize()
-    Me.Caption = LocalizedStrings("UDView_Caption")
-    btnUpdate.Caption = LocalizedStrings("UDView_BtnUpdateStateReady")
-    btnCancel.Caption = LocalizedStrings("UDView_BtnCancel")
-    btnDelete.Caption = LocalizedStrings("UDView_BtnDelete")
+    Me.Caption = LocalizedStrings("UDView.Caption")
+    btnUpdate.Caption = LocalizedStrings("UDView.BtnUpdateStateReady")
+    btnCancel.Caption = LocalizedStrings("UDView.BtnCancel")
+    btnDelete.Caption = LocalizedStrings("UDView.BtnDelete")
 End Sub
 
 Private Sub UserForm_Activate()
-    txtUpdate = LocalizedStrings("UDView_Update")
-    txtCancel = LocalizedStrings("UDView_Cancel", FileSpec)
-    txtDelete = LocalizedStrings("UDView_Delete")
+    txtUpdate = LocalizedStrings("UDView.Update")
+    txtCancel = LocalizedStrings("UDView.Cancel", FileSpec)
+    txtDelete = LocalizedStrings("UDView.Delete")
     With btnUpdate
         .Enabled = False
-        .Caption = LocalizedStrings("UDView_BtnUpdateStateWait")
+        .Caption = LocalizedStrings("UDView.BtnUpdateStateWait")
         DoEvents
         Sleep 2000
-        .Caption = LocalizedStrings("UDView_BtnUpdateStateReady")
+        .Caption = LocalizedStrings("UDView.BtnUpdateStateReady")
         .Enabled = True
         .SetFocus
     End With

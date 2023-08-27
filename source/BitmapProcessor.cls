@@ -30,7 +30,8 @@ Private This As typeThis
 
 Public Function Create(ByVal BitmapShape As Shape) As BitmapProcessor
     If Not BitmapShape.Type = cdrBitmapShape Then _
-        Err.Raise CustomError, "BitmapProcessor", "BitmapShape must be Bitmap type"
+        VBA.Err.Raise _
+            CustomError, "BitmapProcessor", "BitmapShape must be Bitmap type"
     With New BitmapProcessor
         Set Create = .Init(BitmapShape)
     End With

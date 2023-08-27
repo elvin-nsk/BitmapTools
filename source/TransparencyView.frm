@@ -24,17 +24,17 @@ Public IsCancelled As Boolean
 '===============================================================================
 
 Private Sub UserForm_Initialize()
-    Me.Caption = LocalizedStrings("TransView_Caption")
-    btnOk.Caption = LocalizedStrings("TransView_BtnOK")
+    Me.Caption = LocalizedStrings("TransView.Caption")
+    btnOk.Caption = LocalizedStrings("TransView.BtnOK")
 End Sub
 
 Private Sub UserForm_Activate()
     If Transparent Then
         imgNonTransparent.Visible = False
-        Text = LocalizedStrings("TransView_Transparent")
+        Text = LocalizedStrings("TransView.Transparent")
     Else
         imgTransparent.Visible = False
-        Text = LocalizedStrings("TransView_Opaque")
+        Text = LocalizedStrings("TransView.Opaque")
     End If
 End Sub
 
@@ -43,7 +43,7 @@ Private Sub btnCancel_Click()
     FormCancel
 End Sub
 
-Private Sub btnOK_Click()
+Private Sub btnOk_Click()
     FormŒ 
 End Sub
 

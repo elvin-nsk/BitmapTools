@@ -13,28 +13,36 @@ Option Explicit
 
 '===============================================================================
 
-Private Sub Class_Initialize()
-    If Not Me Is Helpers Then Err.Raise 425 'Invalid object use
-End Sub
-
-'===============================================================================
-
-Public Sub SendToEditor(ByVal BitmapShape As Shape, ByVal BitmapFile As String)
+Public Sub SendToEditor( _
+               ByVal Editor As String, _
+               ByVal BitmapShape As Shape, _
+               ByVal BitmapFile As String _
+           )
     With BitmapProcessor.Create(BitmapShape)
         .SaveTIF BitmapFile
     End With
-    OpenInExternalEditor BitmapFile
+    OpenInExternalEditor Editor, BitmapFile
 End Sub
 
-Public Sub UpdateAfterEdit(ByVal BitmapShape As Shape, ByVal BitmapFile As String)
+Public Sub UpdateAfterEdit( _
+               ByVal BitmapShape As Shape, _
+               ByVal BitmapFile As String _
+           )
     With BitmapProcessor.Create(BitmapShape)
         .ReplaceBitmap BitmapFile
     End With
     VBA.Kill BitmapFile
 End Sub
 
-Public Function OpenInExternalEditor(ByVal BitmapFileSpec As String)
-    VBA.CreateObject("Photoshop.Application").Open BitmapFileSpec
+Public Function OpenInExternalEditor( _
+                    ByVal Editor As String, _
+                    ByVal BitmapFileSpec As String _
+                )
+    Dim CallString As String
+    CallString = _
+        VBA.Chr(34) & Editor & VBA.Chr(34) _
+      & " " & VBA.Chr(34) & BitmapFileSpec & VBA.Chr(34)
+    VBA.CreateObject("WScript.Shell").Run CallString
 End Function
 
 Public Function GetNewTempBitmapFileSpec( _
@@ -42,8 +50,8 @@ Public Function GetNewTempBitmapFileSpec( _
                     ByVal StaticID As Long _
                 ) As IEither
     Dim TempFolder As String
-    TempFolder = lib_elvin.GetTempFolder
-    If Not lib_elvin.FileExists(TempFolder) Then
+    TempFolder = GetTempFolder
+    If Not FileExists(TempFolder) Then
         Set GetNewTempBitmapFileSpec = Either.Create()
         Exit Function
     End If
@@ -58,9 +66,9 @@ Public Function GetCurrentTempBitmapFileSpec( _
                     ByVal StaticID As Long _
                 ) As IEither
     Dim TempFile As String
-    TempFile = lib_elvin.GetTempFolder _
+    TempFile = GetTempFolder _
              & BuildTempBitmapFileName(DocumentFileName, StaticID)
-    If Not lib_elvin.FileExists(TempFile) Then
+    If Not FileExists(TempFile) Then
         Set GetCurrentTempBitmapFileSpec = Either.Create()
         Exit Function
     End If
@@ -79,12 +87,29 @@ End Function
 
 Public Function ValidateShapeOrNotifyUser(ByVal Shape As Shape) As Boolean
     If Shape Is Nothing Then
-        VBA.MsgBox LocalizedStrings("Common_ErrNothingSelected"), vbInformation
+        VBA.MsgBox LocalizedStrings("Common.ErrNothingSelected"), vbInformation
         Exit Function
     End If
     If Not Shape.Type = cdrBitmapShape Then
-        VBA.MsgBox LocalizedStrings("Common_ErrShapeIsNotBitmap"), vbInformation
+        VBA.MsgBox LocalizedStrings("Common.ErrShapeIsNotBitmap"), vbInformation
         Exit Function
     End If
     ValidateShapeOrNotifyUser = True
+End Function
+
+Public Function GetConfig( _
+                    Optional ByVal ReadOnly As Boolean = False _
+                ) As PresetsConfig
+    If ReadOnly Then
+        Set GetConfig = PresetsConfig.CreateReadOnly(CONFIG_NAME)
+    Else
+        Set GetConfig = PresetsConfig.Create(CONFIG_NAME, CreateDefaultPreset)
+    End If
+End Function
+
+Public Function CreateDefaultPreset() As Dictionary
+    Set CreateDefaultPreset = New Dictionary
+    With CreateDefaultPreset
+        .Add "Editor", "%ProgramFiles%\Adobe\Adobe Photoshop 2023\Photoshop.exe"
+    End With
 End Function
