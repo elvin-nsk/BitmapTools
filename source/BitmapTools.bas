@@ -1,7 +1,7 @@
 Attribute VB_Name = "BitmapTools"
 '===============================================================================
 '   Макрос          : BitmapTools
-'   Версия          : 2023.08.27
+'   Версия          : 2023.10.11
 '   Сайты           : https://vk.com/elvin_macro/BitmapTools
 '                     https://github.com/elvin-nsk/BitmapTools
 '   Автор           : elvin-nsk (me@elvin.nsk.ru, https://vk.com/elvin_macro)
@@ -9,7 +9,7 @@ Attribute VB_Name = "BitmapTools"
 
 Option Explicit
 
-Public Const RELEASE As Boolean = False
+Public Const RELEASE As Boolean = True
 
 Public Const CONFIG_NAME As String = "elvin_BitmapTools"
 Public Const EDITOR_KEY As String = "Editor"
@@ -124,7 +124,7 @@ Sub SendToEditorAndUpdate()
                      Context.Shape.StaticID _
                  )
         If .IsError Then
-            VBA.MsgBox "Не удалось создать временный файл", vbCritical
+            VBA.MsgBox LocalizedStrings("BTools.ErrTempFileCreate"), vbCritical
             GoTo Finally
         Else
             BitmapFile = .SuccessValue
